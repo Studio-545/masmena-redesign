@@ -114,15 +114,15 @@ const whyUsData = [
 
 const EditorialWhyUs: React.FC = () => {
   return (
-    <section id="why-us" className="py-24 md:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] border-t border-[var(--border-color)] overflow-hidden transition-colors duration-700">
+    <section id="why-us" className="py-24 md:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden transition-colors duration-700">
       <div className="container-custom">
         {/* Header Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-end relative pb-4">
 
           <div className="relative z-10">
-            <p className="text-[var(--text-secondary)] uppercase tracking-[0.3em] text-[10px] font-bold mb-6">Why Us</p>
+            <p className="eyebrow mb-6">Why Us</p>
             
-            <AnimatedTitle lines={['Why MAS?']} className="mb-8" />
+            <AnimatedTitle lines={['Why *MAS?*']} className="mb-8" />
 
             <p className="text-[var(--text-secondary)] text-[15px] md:text-[16px] leading-relaxed max-w-[500px] font-normal">
               Because great marketing is more than visibility. We help brands build meaningful connections, accelerate growth, and deliver measurable results.
@@ -130,33 +130,29 @@ const EditorialWhyUs: React.FC = () => {
           </div>
 
           <div className="relative z-10 flex lg:justify-end items-end h-full lg:pb-4">
-            <CtaButton href="#contact" text="Book Your Appointment" />
+            <CtaButton href="#contact" text="Book a call" />
           </div>
 
         </div>
 
-        {/* 4x2 Grid of Features */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16 mt-20 relative z-10">
+        {/* 4x2 grid of feature cards (2 columns on phones to keep the page short) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-4 mt-12 md:mt-20 relative z-10">
           {whyUsData.map((item, index) => (
-            <div key={index} className="group relative flex flex-col items-start">
-              
-              {/* Icon */}
-              <div className="mb-4 transition-all duration-500 group-hover:scale-105">
-                {item.icon}
+            <div key={index} className="v-card group flex min-h-[170px] sm:min-h-[200px] md:min-h-[250px] flex-col justify-between p-4 sm:p-6 md:p-7">
+              <div className="flex items-start justify-between">
+                <div className="relative flex h-11 w-11 md:h-14 md:w-14 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.08] to-white/[0.02] shadow-[0_0_30px_-8px_rgba(166,115,255,0.5)] transition-all duration-500 group-hover:border-[rgba(166,115,255,0.5)] group-hover:shadow-[0_0_40px_-6px_rgba(166,115,255,0.8)] [&>div>svg]:w-6 [&>div>svg]:h-6 md:[&>div>svg]:w-7 md:[&>div>svg]:h-7 [&>svg]:w-6 [&>svg]:h-6 md:[&>svg]:w-7 md:[&>svg]:h-7">
+                  {item.icon}
+                </div>
+                <span className="text-[11px] md:text-[12px] font-medium text-white/30 tabular-nums">{item.num.replace(/[()]/g, '')}</span>
               </div>
-
-              {/* Title Block */}
-              <div className="relative w-full mb-3">
-                <h3 className="relative z-10 leading-tight text-[19px] sm:text-[21px] md:text-[23px] font-medium tracking-tight text-[var(--text-primary)]">
+              <div className="mt-6">
+                <h3 className="text-[15px] sm:text-[18px] md:text-[21px] font-medium tracking-[-0.02em] leading-tight text-[var(--text-primary)] mb-1.5 md:mb-2">
                   {item.title}
                 </h3>
+                <p className="text-white/55 text-[12px] sm:text-[13px] md:text-[14px] leading-relaxed">
+                  {item.description}
+                </p>
               </div>
-
-              {/* Description */}
-              <p className="text-[var(--text-secondary)] text-[13px] md:text-[14px] leading-relaxed max-w-[280px]">
-                {item.description}
-              </p>
-
             </div>
           ))}
         </div>

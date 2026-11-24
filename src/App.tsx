@@ -1,14 +1,18 @@
-import { BUSINESS } from './data/business';
 import { Suspense, lazy, useState, useEffect } from 'react';
 import SmoothScroll from './components/layout/SmoothScroll';
 import EditorialNavbar from './components/layout/EditorialNavbar';
 import EditorialHero from './components/sections/EditorialHero';
 import CustomCursor from './components/ui/CustomCursor';
 import GlobalGridLines from './components/ui/GlobalGridLines';
-import { Facebook, Instagram, Linkedin } from 'lucide-react';
+import SiteFooter from './components/layout/SiteFooter';
+import FloatingWhatsApp from './components/ui/FloatingWhatsApp';
+import IntroLoader from './components/ui/IntroLoader';
+import useRevealOnScroll, { useCardSpotlight } from './hooks/useRevealOnScroll';
 
 // Lazy-load below-fold sections — each becomes its own JS chunk
 const EditorialClients     = lazy(() => import('./components/sections/EditorialClients'));
+const EditorialStatement    = lazy(() => import('./components/sections/EditorialStatement'));
+const EditorialIntro        = lazy(() => import('./components/sections/EditorialIntro'));
 const EditorialWhyUs        = lazy(() => import('./components/sections/EditorialWhyUs'));
 const EditorialWorkflow     = lazy(() => import('./components/sections/EditorialWorkflow'));
 const EditorialAbout        = lazy(() => import('./components/sections/EditorialAbout'));
@@ -18,6 +22,7 @@ const EditorialTools        = lazy(() => import('./components/sections/Editorial
 const EditorialPricing      = lazy(() => import('./components/sections/EditorialPricing'));
 const EditorialFAQ          = lazy(() => import('./components/sections/EditorialFAQ'));
 const EditorialContact      = lazy(() => import('./components/sections/EditorialContact'));
+const EditorialMarquee      = lazy(() => import('./components/sections/EditorialMarquee'));
 const EditorialWorkPage     = lazy(() => import('./components/sections/EditorialWorkPage'));
 
 // Minimal invisible placeholder while lazy chunks load
@@ -26,6 +31,8 @@ const SectionFallback = () => (
 );
 
 function App() {
+  useRevealOnScroll();
+  useCardSpotlight();
   const [currentPath, setCurrentPath] = useState(window.location.pathname);
   const [currentHash, setCurrentHash] = useState(window.location.hash);
 
@@ -52,6 +59,7 @@ function App() {
   return (
     <SmoothScroll>
       <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] selection:bg-[var(--text-primary)] selection:text-[var(--bg-primary)] min-h-screen relative transition-colors duration-700">
+        <IntroLoader />
         <CustomCursor />
         <GlobalGridLines />
         
@@ -69,6 +77,14 @@ function App() {
               {/* 1.5 PARTNERS MARQUEE SLIDER */}
               <Suspense fallback={<SectionFallback />}>
                 <EditorialClients />
+              </Suspense>
+
+              <Suspense fallback={<SectionFallback />}>
+                <EditorialStatement />
+              </Suspense>
+
+              <Suspense fallback={<SectionFallback />}>
+                <EditorialIntro />
               </Suspense>
 
               {/* Below-fold sections — lazy loaded on first render */}
@@ -107,49 +123,14 @@ function App() {
               <Suspense fallback={<SectionFallback />}>
                 <EditorialContact />
               </Suspense>
+
+              <Suspense fallback={<SectionFallback />}>
+                <EditorialMarquee />
+              </Suspense>
             </main>
 
-            <footer className="border-t border-[var(--border-color)] text-[10px] uppercase tracking-[0.3em] text-[var(--text-secondary)] bg-[var(--bg-primary)] transition-colors duration-700">
-              <div className="container-custom py-12 flex justify-between items-center">
-                <div className="flex flex-col gap-2">
-                  <div>© {new Date().getFullYear()} MAS MENA®</div>
-                  <address className="not-italic normal-case tracking-[0.1em] flex flex-wrap gap-x-4 gap-y-1">
-                    <a href={BUSINESS.mapsUrl} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--text-primary)] transition-colors">{BUSINESS.address}</a>
-                    <a href={BUSINESS.phoneHref} className="hover:text-[var(--text-primary)] transition-colors" dir="ltr">{BUSINESS.phoneDisplay}</a>
-                    <a href={`mailto:${BUSINESS.email}`} className="hover:text-[var(--text-primary)] transition-colors">{BUSINESS.email}</a>
-                  </address>
-                </div>
-                <div className="flex gap-6 items-center">
-                  <a 
-                    href="https://www.facebook.com/ModernAdvancedServices" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="hover:text-[var(--text-primary)] transition-colors flex items-center justify-center p-1"
-                    aria-label="Facebook"
-                  >
-                    <Facebook size={16} />
-                  </a>
-                  <a 
-                    href="https://www.instagram.com/modern.advanced.services/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="hover:text-[var(--text-primary)] transition-colors flex items-center justify-center p-1"
-                    aria-label="Instagram"
-                  >
-                    <Instagram size={16} />
-                  </a>
-                  <a 
-                    href="https://www.linkedin.com/company/mas-modern-advanced-services/" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="hover:text-[var(--text-primary)] transition-colors flex items-center justify-center p-1"
-                    aria-label="LinkedIn"
-                  >
-                    <Linkedin size={16} />
-                  </a>
-                </div>
-              </div>
-            </footer>
+            <SiteFooter />
+            <FloatingWhatsApp />
           </>
         )}
       </div>

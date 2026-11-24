@@ -1,223 +1,153 @@
 import React from 'react';
+import { ArrowUpRight, Check } from 'lucide-react';
 import AnimatedTitle from '../ui/AnimatedTitle';
 
-const DotIcon = () => (
-  <div className="relative w-[18px] h-[18px] flex-shrink-0 flex items-center justify-center">
-    {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-      <div
-        key={i}
-        className="absolute w-[1.5px] h-[1.5px] bg-white/50"
-        style={{ transform: `rotate(${angle}deg) translateY(-7px)` }}
-      />
-    ))}
-  </div>
-);
+type Plan = {
+  label: string;
+  name: string;
+  price: string;
+  unit?: string;
+  tagline: string;
+  features: string[];
+  cta: string;
+  featured?: boolean;
+};
+
+const plans: Plan[] = [
+  {
+    label: 'Brand presence',
+    name: 'Basic',
+    price: '700',
+    unit: 'JOD / mo',
+    tagline: 'Perfect for brand presence & social growth',
+    features: [
+      '15 custom posts & short-form reels / TikToks per month',
+      'Localized English & Arabic copywriting & optimization',
+      'Professional graphic design & brand asset creation',
+      'Strategic hashtag, trend, and target-audience research',
+      'Community management & audience engagement',
+      'Monthly analytics dashboard & campaign reporting',
+    ],
+    cta: 'Pick this plan',
+  },
+  {
+    label: 'Social + web',
+    name: 'Premium',
+    price: '1,000',
+    unit: 'JOD / mo',
+    tagline: 'Complete social growth & digital presence',
+    features: [
+      'Everything in the Social Media plan included',
+      '30 custom posts & reels / TikToks per month',
+      'Custom high-performance marketing website (up to 8 pages)',
+      'Modern responsive web design developed in React/Webflow',
+      'Complete SEO setup, indexing, & speed optimization',
+      'Integrated conversion tracking & lead capture setup',
+      'Dedicated account manager & bi-weekly syncs',
+      'Premium customer care support & priority access',
+    ],
+    cta: 'Pick this plan',
+    featured: true,
+  },
+  {
+    label: 'Enterprise',
+    name: 'Ultimate',
+    price: 'Custom',
+    tagline: 'For details & custom enterprise scaling',
+    features: [
+      'Full-scale omnichannel digital strategy & execution',
+      'Bespoke high-performance web apps, client portals & e-commerce',
+      'Influencer marketing campaigns with GCC & regional creators',
+      'Paid media buying & optimization (Meta, Google, TikTok, LinkedIn)',
+      'TV, Radio & Out-of-Home (OOH) regional media planning',
+      'Dedicated 24/7 partner support & WhatsApp/Slack channel',
+    ],
+    cta: 'Talk to sales',
+  },
+];
 
 const EditorialPricing: React.FC = () => {
   return (
-    <section id="pricing" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding border-t border-[var(--border-color)] transition-colors duration-700">
-      
-      {/* Header Area */}
-      <div className="container-custom relative z-10 mb-20">
-        <div className="max-w-3xl relative">
-          <AnimatedTitle lines={['Plans Built For You.', 'Choose The Perfect Fit.']} className="mb-8" />
-          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed max-w-[500px] mt-6">
+    <section id="pricing" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding transition-colors duration-700 overflow-hidden">
+      {/* Soft glow behind the featured plan */}
+      <div aria-hidden className="pointer-events-none absolute left-1/2 top-[45%] h-[520px] w-[720px] -translate-x-1/2 rounded-full bg-[rgba(166,115,255,0.10)] blur-[120px]" />
+
+      <div className="container-custom relative z-10">
+        <div className="section-head-center mb-12 md:mb-16">
+          <p className="eyebrow mb-6">Pricing</p>
+          <AnimatedTitle
+            lines={['Plans built for you.', 'Choose the *perfect* fit.']}
+            className="mb-6 text-center"
+          />
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed max-w-[540px] mx-auto">
             Choose a plan tailored to scale your brand. From high-impact social media campaigns and custom web experiences to enterprise-grade omnichannel presence management.
           </p>
         </div>
-      </div>
 
-      {/* Pricing Grid Container */}
-      <div className="container-custom relative z-10 mt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-3 border-t border-b border-[var(--border-color)] divide-y lg:divide-y-0 lg:divide-x divide-[var(--border-color)]">
-          
-          {/* ── Basic Card ── */}
-          <div className="relative min-h-[580px] overflow-hidden group bg-black/40 backdrop-blur-sm flex flex-col transition-all hover:bg-black/60">
-            {/* Ambient Top Glow */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.01] rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="px-6 py-10 sm:px-8 md:px-10 md:py-12 flex flex-col flex-1 z-10">
-              {/* Card Title */}
-              <div className="flex flex-col mb-8">
-                <h3 className="text-[24px] lg:text-[28px] font-semibold tracking-tight text-white mb-2">
-                  Basic
-                </h3>
-                <div className="flex flex-col mt-2">
-                  <span className="text-[32px] font-bold text-white tracking-tight">700 JOD<span className="text-[14px] text-white/40 font-normal"> / mo</span></span>
-                  <span className="text-[12px] text-white/50 font-normal mt-1">Perfect for brand presence & social growth</span>
-                </div>
+        {/* Phones/tablets: swipe sideways between plans. Desktop: three columns. */}
+        <div className="flex lg:grid lg:grid-cols-3 gap-3 md:gap-4 items-stretch overflow-x-auto lg:overflow-visible snap-x snap-mandatory -mx-8 px-8 md:-mx-16 md:px-16 lg:mx-0 lg:px-0 scroll-px-8 md:scroll-px-16 pb-4 lg:pb-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {plans.map((plan) => (
+            <div
+              key={plan.name}
+              className={`v-card flex flex-col p-6 sm:p-8 md:p-9 w-[86%] sm:w-[60%] lg:w-auto flex-shrink-0 snap-center ${
+                plan.featured
+                  ? 'border-[rgba(166,115,255,0.45)] shadow-[0_0_0_1px_rgba(166,115,255,0.15),0_30px_80px_-30px_rgba(166,115,255,0.45)] lg:-my-3 lg:py-12 order-first lg:order-none'
+                  : ''
+              }`}
+            >
+              {plan.featured && <span aria-hidden className="glow-border" />}
+              <div className="flex items-center justify-between mb-8">
+                <span className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/50">{plan.label}</span>
+                {plan.featured && (
+                  <span className="rounded-full bg-[var(--accent-color)] px-3 py-1 text-[11px] font-semibold text-black">
+                    Most popular
+                  </span>
+                )}
               </div>
 
-              {/* Features List */}
-              <div className="flex-1 flex flex-col justify-start mb-10">
-                <ul className="flex flex-col gap-[14px] text-[12px] lg:text-[13px] text-white/70 font-normal">
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>15 custom posts & short-form reels / TikToks per month</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Localized English & Arabic copywriting & optimization</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Professional graphic design & brand asset creation</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Strategic hashtag, trend, and target-audience research</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Community management & audience engagement</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Monthly analytics dashboard & campaign reporting</span>
-                  </li>
-                </ul>
-              </div>
+              <h3 className="text-[20px] font-medium tracking-[-0.02em] text-white/90 mb-3">{plan.name}</h3>
 
-              {/* Price & CTA */}
-              <div className="pointer-events-auto mt-auto">
-                <a href="#contact" className="group/btn flex items-center justify-between w-full border-b border-white/20 pb-4 transition-all hover:border-white/60 cursor-pointer">
-                  <span className="text-[12px] font-bold uppercase tracking-widest text-white">Pick This Package</span>
-                  <DotIcon />
+              <div className="flex items-baseline gap-2 mb-2">
+                <span className="text-[44px] md:text-[52px] font-semibold tracking-[-0.045em] leading-none text-white">
+                  {plan.price}
+                </span>
+                {plan.unit && <span className="text-[14px] text-white/45">{plan.unit}</span>}
+              </div>
+              <p className="text-[14px] text-white/55 mb-8">{plan.tagline}</p>
+
+              <ul className="flex-1 mb-10 border-t border-white/[0.08]">
+                {plan.features.map((feature) => (
+                  <li key={feature} className="flex items-start gap-3 border-b border-white/[0.08] py-3.5 text-[13px] md:text-[14px] text-white/75 leading-snug">
+                    <Check
+                      size={15}
+                      strokeWidth={2.5}
+                      className={`mt-[2px] flex-shrink-0 ${plan.featured ? 'text-[var(--accent-color)]' : 'text-white/40'}`}
+                    />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="flex items-center justify-between gap-3">
+                <a
+                  href="#contact"
+                  className={`inline-flex items-center gap-2 rounded-full px-5 py-3 text-[14px] font-medium transition-all duration-300 ${
+                    plan.featured
+                      ? 'bg-white text-black hover:bg-white/90 shadow-[0_8px_30px_-8px_rgba(166,115,255,0.6)]'
+                      : 'border border-white/15 bg-white/[0.03] text-white hover:bg-white/[0.08] hover:border-white/30'
+                  }`}
+                >
+                  {plan.cta}
+                  <ArrowUpRight size={16} />
+                </a>
+                <a href="#faq" className="text-[13px] text-white/45 hover:text-white transition-colors">
+                  Questions?
                 </a>
               </div>
             </div>
-          </div>
-
-          {/* ── Premium Card ── */}
-          <div className="relative min-h-[580px] overflow-hidden group bg-white/[0.02] backdrop-blur-md flex flex-col transition-all hover:bg-white/[0.04]">
-            {/* Accent Glowing Border Top */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-            {/* Ambient Top Glow */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/[0.02] rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="px-6 py-10 sm:px-8 md:px-10 md:py-12 flex flex-col flex-1 z-10">
-              {/* Popular Badge */}
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-[8px] font-bold tracking-[0.25em] text-white/40 uppercase bg-white/5 px-2.5 py-1 rounded-none border border-white/5">MOST POPULAR</span>
-              </div>
-              
-              {/* Card Title */}
-              <div className="flex flex-col mb-8">
-                <h3 className="text-[24px] lg:text-[28px] font-semibold tracking-tight text-white mb-2">
-                  Premium
-                </h3>
-                <div className="flex flex-col mt-2">
-                  <span className="text-[32px] font-bold text-white tracking-tight">1,000 JOD<span className="text-[14px] text-white/40 font-normal"> / mo</span></span>
-                  <span className="text-[12px] text-white/50 font-normal mt-1">Complete social growth & digital presence</span>
-                </div>
-              </div>
-
-              {/* Features List */}
-              <div className="flex-1 flex flex-col justify-start mb-10">
-                <ul className="flex flex-col gap-[14px] text-[12px] lg:text-[13px] text-white/70 font-normal">
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Everything in the Social Media plan included</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>30 custom posts & reels / TikToks per month</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Custom high-performance marketing website (up to 8 pages)</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Modern responsive web design developed in React/Webflow</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Complete SEO setup, indexing, & speed optimization</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Integrated conversion tracking & lead capture setup</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Dedicated account manager & bi-weekly syncs</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="mt-0.5 text-[var(--accent-color)] flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Premium customer care support & priority access</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Price & CTA */}
-              <div className="pointer-events-auto mt-auto">
-                <a href="#contact" className="group/btn flex items-center justify-between w-full border-b border-white/20 pb-4 transition-all hover:border-white/60 cursor-pointer">
-                  <span className="text-[12px] font-bold uppercase tracking-widest text-white">Pick This Package</span>
-                  <DotIcon />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* ── Ultimate Card ── */}
-          <div className="relative min-h-[580px] overflow-hidden group bg-black/40 backdrop-blur-sm flex flex-col transition-all hover:bg-black/60">
-            {/* Ambient Top Glow */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-white/[0.01] rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="px-6 py-10 sm:px-8 md:px-10 md:py-12 flex flex-col flex-1 z-10">
-              {/* Card Title */}
-              <div className="flex flex-col mb-8">
-                <h3 className="text-[24px] lg:text-[28px] font-semibold tracking-tight text-white mb-2">
-                  Ultimate
-                </h3>
-                <div className="flex flex-col mt-2 h-[48px] justify-center">
-                  <span className="text-[28px] font-bold text-white tracking-tight">Custom</span>
-                  <span className="text-[12px] text-white/50 font-normal mt-1">For details & custom enterprise scaling</span>
-                </div>
-              </div>
-
-              {/* Features List */}
-              <div className="flex-1 flex flex-col justify-start mb-10">
-                <ul className="flex flex-col gap-[14px] text-[12px] lg:text-[13px] text-white/70 font-normal">
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Full-scale omnichannel digital strategy & execution</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Bespoke high-performance web apps, client portals & e-commerce</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Influencer marketing campaigns with GCC & regional creators</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Paid media buying & optimization (Meta, Google, TikTok, LinkedIn)</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>TV, Radio & Out-of-Home (OOH) regional media planning</span>
-                  </li>
-                  <li className="flex items-start gap-3.5">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 text-white/50 flex-shrink-0"><path d="M20 6L9 17l-5-5"/></svg>
-                    <span>Dedicated 24/7 partner support & WhatsApp/Slack channel</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Price & CTA */}
-              <div className="pointer-events-auto mt-auto">
-                <a href="#contact" className="group/btn flex items-center justify-between w-full border-b border-white/20 pb-4 transition-all hover:border-white/60 cursor-pointer">
-                  <span className="text-[12px] font-bold uppercase tracking-widest text-white">Talk to Sales</span>
-                  <DotIcon />
-                </a>
-              </div>
-            </div>
-          </div>
-
+          ))}
         </div>
+        <p className="lg:hidden mt-2 text-center text-[12px] text-white/40">Swipe to compare plans →</p>
       </div>
     </section>
   );

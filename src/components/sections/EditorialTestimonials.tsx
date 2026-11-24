@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import AnimatedTitle from '../ui/AnimatedTitle';
+import CountUp from '../ui/CountUp';
 
 const testimonials = [
   {
@@ -111,14 +112,11 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial, onVideoC
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClick={handleClick}
-      className={`relative aspect-auto min-h-[420px] md:min-h-0 md:aspect-[1.15/1] bg-black overflow-hidden group flex flex-col md:block ${
-        index % 2 === 0 
-          ? "border-t border-b border-l-0 border-r-0 md:border-l-0 md:border-r border-[var(--border-color)]"
-          : "border-t border-b border-l-0 border-r-0 md:border-l md:border-r-0 border-[var(--border-color)]"
-      } ${hasVideo ? 'cursor-pointer' : ''}`}
+      data-cursor={hasVideo ? 'play' : undefined}
+      className={`v-card relative aspect-auto min-h-[440px] md:min-h-0 md:aspect-[1.15/1] group flex flex-col md:block ${index % 2 === 1 ? 'md:translate-y-10' : ''} ${hasVideo ? 'cursor-pointer' : ''}`}
     >
       {/* Background Image - monochromatic & desaturated */}
-      <div className="relative md:absolute top-0 left-0 right-0 h-[200px] sm:h-[240px] md:h-[65%] overflow-hidden grayscale contrast-125 brightness-75 transition-all duration-[1.2s] ease-in-out group-hover:grayscale-0 group-hover:contrast-100 group-hover:brightness-90 flex-shrink-0">
+      <div className="relative md:absolute top-0 left-0 right-0 h-[200px] sm:h-[240px] md:h-[65%] overflow-hidden brightness-[0.85] transition-all duration-[1.2s] ease-in-out group-hover:brightness-100 flex-shrink-0">
         {hasVideo ? (
           <>
             <video 
@@ -173,8 +171,9 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial, onVideoC
       <div className="relative md:absolute md:inset-0 p-6 sm:p-8 md:p-12 flex flex-col justify-end flex-1 md:flex-initial pointer-events-none select-none">
         
         {/* Quote Text */}
-        <p className="text-[13px] md:text-[14px] text-[var(--text-secondary)] leading-[1.7] mb-6 md:mb-12 font-normal max-w-[95%]">
-          {testimonial.quote}
+        <span aria-hidden className="font-serif italic text-[56px] leading-[0.6] text-[var(--accent-color)] mb-3">&ldquo;</span>
+        <p className="text-[15px] md:text-[16px] text-white/85 leading-[1.6] mb-6 md:mb-8 font-normal max-w-[95%] tracking-[-0.005em]">
+          {testimonial.quote.replace(/^"|"$/g, '').replace(/\.\.$/, '.')}
         </p>
 
         {/* Footer */}
@@ -191,7 +190,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial, onVideoC
                 />
               )}
               <div className="flex flex-col">
-                <h4 className="text-[14px] font-semibold text-[var(--text-primary)] tracking-tight leading-tight">{testimonial.author}</h4>
+                <p className="text-[14px] font-semibold text-[var(--text-primary)] tracking-tight leading-tight">{testimonial.author}</p>
                 <p className="text-[12px] text-[var(--text-secondary)] mt-1 font-medium">{testimonial.title}</p>
               </div>
             </div>
@@ -201,7 +200,8 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({ testimonial, onVideoC
 
           {/* Company Logo */}
           <div className="mix-blend-normal opacity-90 z-10 pointer-events-auto">
-            <span className="text-[16px] font-bold tracking-[0.1em] uppercase text-[var(--text-secondary)]">
+            <span className="inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.16em] uppercase text-white/80">
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-color)]" />
               {testimonial.company}
             </span>
           </div>
@@ -216,19 +216,35 @@ const EditorialTestimonials: React.FC = () => {
   const [activeVideoUrl, setActiveVideoUrl] = useState<string | null>(null);
 
   return (
-    <section id="testimonials" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding border-t border-[var(--border-color)] transition-colors duration-700">
+    <section id="testimonials" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding transition-colors duration-700">
       <div className="container-custom relative z-10">
         
         {/* Header Area */}
-        <div className="mb-20 relative px-4 md:px-0">
-          <AnimatedTitle lines={['From The Mouth Of Our', 'Beloved Partners & Winners']} className="mb-6 leading-[1.1]" />
+        <div className="mb-12 md:mb-16 relative">
+          <AnimatedTitle lines={['From the mouth of our', '*beloved* partners & winners']} className="mb-6 leading-[1.1]" />
           <p className="text-[var(--text-secondary)] text-[14px] md:text-[15px] leading-relaxed max-w-[420px] mt-6">
             Don't take our word for it. These are the founders and marketing leads who trusted us with their companies and kept coming back.
           </p>
         </div>
 
+        {/* Headline numbers */}
+        <div className="grid grid-cols-3 gap-3 md:gap-4 mb-4 md:mb-6">
+          {[
+            { value: '200', suffix: '+', label: 'Projects delivered' },
+            { value: '12', suffix: '+', label: 'Countries reached' },
+            { value: '6', suffix: '', label: 'Service disciplines' },
+          ].map((stat) => (
+            <div key={stat.label} className="v-card px-4 py-5 md:px-8 md:py-8">
+              <div className="text-[30px] sm:text-[40px] md:text-[56px] font-semibold tracking-[-0.04em] leading-none">
+                <CountUp to={Number(stat.value)} /><span className="text-[var(--accent-color)]">{stat.suffix}</span>
+              </div>
+              <div className="mt-2 md:mt-3 text-[11px] md:text-[13px] text-white/50">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+
         {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 md:pb-10">
           {testimonials.map((testimonial, idx) => (
             <TestimonialCard 
               key={testimonial.id}

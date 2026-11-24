@@ -42,7 +42,7 @@ const BookingForm: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-[1060px] bg-[var(--bg-primary)] border border-[var(--border-color)] overflow-hidden shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] flex flex-col transition-colors duration-700">
+    <div className="w-full overflow-hidden rounded-[20px] border border-white/10 bg-black shadow-[0_32px_64px_-16px_rgba(0,0,0,0.5)] flex flex-col">
       {/* Container where Calendly will dynamically render the iframe */}
       <div 
         ref={containerRef}

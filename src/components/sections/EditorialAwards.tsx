@@ -42,15 +42,15 @@ const awardsData = [
 
 const EditorialAwards: React.FC = () => {
   return (
-    <section id="awards" className="py-24 md:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] border-t border-[var(--border-color)] overflow-hidden transition-colors duration-700">
+    <section id="awards" className="py-24 md:py-32 bg-[var(--bg-primary)] text-[var(--text-primary)] overflow-hidden transition-colors duration-700">
       <div className="container-custom">
         {/* Header Block */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-end relative pb-4 mb-12 md:mb-16">
 
           <div className="relative z-10">
-            <p className="text-[var(--text-secondary)] uppercase tracking-[0.3em] text-[10px] font-bold mb-6">Our Recognition</p>
+            <p className="eyebrow mb-6">Our Recognition</p>
             
-            <AnimatedTitle lines={['Recognized Excellence']} className="mb-8" />
+            <AnimatedTitle lines={['Recognized *excellence*']} className="mb-8" />
 
             <p className="text-[var(--text-secondary)] text-[15px] md:text-[16px] leading-relaxed max-w-[500px] font-normal">
               Every campaign is strategic. Our dedication to creative storytelling, regional relevance, and measurable impact has been celebrated by leading organizations across the MENA region.
@@ -62,10 +62,10 @@ const EditorialAwards: React.FC = () => {
         </div>
 
         {/* Awards Typographic Table */}
-        <div className="w-full flex flex-col relative z-10">
+        <div className="v-card w-full flex flex-col relative z-10 px-4 sm:px-6 md:px-8 py-2 md:py-4">
           
           {/* Header Row - Desktop Only */}
-          <div className="hidden md:flex items-center pb-4 border-b border-[var(--border-color)] text-[10px] uppercase tracking-[0.2em] font-bold text-[var(--text-secondary)]">
+          <div className="hidden md:flex items-center pt-4 pb-4 px-4 border-b border-white/[0.08] text-[11px] uppercase tracking-[0.16em] font-medium text-white/40">
             <div className="w-[30%]">Award Category</div>
             <div className="w-[25%]">Organization</div>
             <div className="w-[30%]">Recognition</div>
@@ -77,13 +77,13 @@ const EditorialAwards: React.FC = () => {
             {awardsData.map((award, index) => (
               <div 
                 key={index} 
-                className="py-5 md:py-8 border-b border-[var(--border-color)] flex flex-row md:items-center justify-between md:justify-start gap-4 transition-all duration-300 hover:bg-white/[0.01] hover:px-4 group cursor-pointer"
+                className="py-5 md:py-7 px-2 md:px-4 border-b border-white/[0.08] last:border-b-0 rounded-xl flex flex-row md:items-center justify-between md:justify-start gap-4 transition-colors duration-300 hover:bg-white/[0.035] group"
               >
                 {/* Mobile: Category + Subtext | Desktop: Category Only */}
                 <div className="w-full md:w-[30%] flex flex-col gap-1 md:gap-0 pr-4 md:pr-0">
-                  <h4 className="text-[16px] md:text-[19px] font-display font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-color)] transition-colors duration-300">
+                  <h3 className="text-[16px] md:text-[19px] font-display font-medium text-[var(--text-primary)] group-hover:text-[var(--accent-color)] transition-colors duration-300">
                     {award.category}
-                  </h4>
+                  </h3>
                   
                   {/* Mobile-only subtext showing Organization & Recognition */}
                   <div className="flex md:hidden items-center gap-1.5 text-[12px] text-[var(--text-secondary)] font-medium leading-none mt-1">
@@ -109,7 +109,7 @@ const EditorialAwards: React.FC = () => {
 
                 {/* Year column (Works on both mobile & desktop, aligned right on mobile & desktop) */}
                 <div className="w-auto md:w-[15%] md:text-right flex items-center justify-end flex-shrink-0">
-                  <span className="inline-block border border-[var(--border-color)] group-hover:border-[var(--accent-color)]/30 text-[var(--text-secondary)] group-hover:text-[var(--accent-color)] px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] md:text-[11px] font-mono tracking-wider rounded-none transition-all duration-300">
+                  <span className="inline-block border border-[var(--border-color)] group-hover:border-[var(--accent-color)]/30 text-[var(--text-secondary)] group-hover:text-[var(--accent-color)] px-2.5 py-0.5 sm:px-3 sm:py-1 text-[10px] md:text-[11px] font-mono tracking-wider rounded-full transition-all duration-300">
                     {award.year}
                   </span>
                 </div>

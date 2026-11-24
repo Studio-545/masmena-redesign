@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { Draggable } from 'gsap/Draggable';
+import { introDelay } from '../ui/IntroLoader';
 import CtaButton from '../ui/CtaButton';
 import AnimatedTitle from '../ui/AnimatedTitle';
 
@@ -369,7 +370,7 @@ const EditorialHero: React.FC = () => {
       };
 
       // Entrance Stagger Timeline Reveal Animation
-      const revealTimeline = gsap.timeline({ delay: 0 });
+      const revealTimeline = gsap.timeline({ delay: introDelay() });
       revealTimeline.to(progressState, {
         index: Z + 4,
         duration: (Z + 4 + Z) * 0.04,
@@ -427,19 +428,17 @@ const EditorialHero: React.FC = () => {
 
 
 
-      gsap.fromTo('.subtext-reveal',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.5 }
+      // The hero paragraph is the page's largest text (Google's LCP element), so it is
+      // visible from the first paint and only slides into place, never fades in.
+      gsap.fromTo('.hero-reveal-soft', { y: 16 }, { y: 0, duration: 1, ease: 'power3.out', delay: 0.2 + introDelay() });
+      gsap.fromTo('.hero-reveal',
+        { opacity: 0, y: 24, filter: 'blur(6px)' },
+        { opacity: 1, y: 0, filter: 'blur(0px)', duration: 1, ease: 'power3.out', stagger: 0.1, delay: 0.35 + introDelay() }
       );
 
-      gsap.fromTo('.stats-reveal',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.65 }
-      );
-
-      gsap.fromTo('.cta-reveal',
-        { opacity: 0, y: 20 },
-        { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', delay: 0.8 }
+      gsap.fromTo('.hero-glow',
+        { opacity: 0, scale: 0.92 },
+        { opacity: 1, scale: 1, duration: 2.2, ease: 'power2.out' }
       );
 
       return () => {
@@ -457,12 +456,16 @@ const EditorialHero: React.FC = () => {
 
   return (
     <section className="relative min-h-0 md:min-h-[calc(100vh-72px)] md:min-h-[calc(100svh-72px)] lg:min-h-screen w-full bg-[var(--bg-primary)] text-[var(--text-primary)] flex flex-col justify-start md:justify-end overflow-hidden transition-colors duration-700 pb-12 md:pb-0">
+      {/* Brand glow behind the carousel */}
+      <div aria-hidden="true" className="hero-glow brand-glow pointer-events-none absolute inset-0 z-0" />
+
       {/* 3D Wave Interactive Background Carousel */}
       <div
         className="relative md:absolute top-0 md:top-[60px] lg:top-[80px] left-0 right-0 w-full h-[230px] sm:h-[290px] md:h-full z-[1] flex items-start select-none pointer-events-auto mt-24 md:mt-0 hero-carousel-mask"
       >
         <div 
           className="w-full h-full relative cursor-grab" 
+          data-cursor="drag"
           ref={containerRef}
           style={{ touchAction: 'pan-y' }}
         >
@@ -475,7 +478,7 @@ const EditorialHero: React.FC = () => {
               <img
                 ref={(el) => { imagesRef.current[i] = el; }}
                 alt=""
-                className="hero-card-img w-[210px] h-[142px] md:w-[320px] md:h-[216px] lg:w-[480px] lg:h-[328px] object-cover pointer-events-none block shadow-2xl bg-[#080808] grayscale-[0.25] select-none"
+                className="hero-card-img w-[210px] h-[142px] md:w-[320px] md:h-[216px] lg:w-[480px] lg:h-[328px] object-cover pointer-events-none block rounded-[12px] md:rounded-[16px] ring-1 ring-white/10 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.9)] bg-[#080808] select-none"
                 loading="lazy"
                 decoding="async"
               />
@@ -484,37 +487,57 @@ const EditorialHero: React.FC = () => {
         </div>
       </div>
 
+      {/* Soft fade into the next section */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[2] hidden md:block h-[48%] bg-gradient-to-t from-[var(--bg-primary)] via-[var(--bg-primary)]/90 to-transparent" />
+
       {/* Hero Content Section */}
-      <div className="flex container-custom relative z-10 w-full flex-col items-start pt-10 md:pt-0 pb-8 md:pb-20 lg:pb-[72px] pointer-events-none select-none">
-        
-        {/* Hero Title */}
-        <AnimatedTitle
-          tag="h1"
-          lines={['Connect. Create. Thrive.']}
-          className="font-display text-[32px] md:text-[52px] leading-[1.15] max-w-[493px] mb-3 md:mb-6 text-left"
-        />
+      <div className="container-custom relative z-10 w-full pt-8 md:pt-0 pb-6 md:pb-12 lg:pb-14 pointer-events-none select-none">
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 md:gap-12">
+          <div className="flex flex-col items-start max-w-[760px]">
+            {/* Eyebrow */}
+            <span className="hero-reveal eyebrow mb-4 md:mb-5 pointer-events-auto">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--accent-color)] opacity-70" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent-color)]" />
+              </span>
+              Full-service marketing agency · Amman
+            </span>
 
-        {/* Description Subtext */}
-        <p className="subtext-reveal text-[var(--text-secondary)] text-[13px] md:text-[14px] leading-relaxed max-w-[450px] mb-5 md:mb-8 font-normal text-left select-text pointer-events-auto">
-          Creative, data-driven campaigns for FMCG, healthcare, beauty, and more. Blending digital and offline strategies to drive impact across Jordan, the GCC, and beyond.
-        </p>
+            {/* Hero Title */}
+            <AnimatedTitle
+              tag="h1"
+              delay={introDelay()}
+              lines={['Connect. Create. *Thrive.*']}
+              className="hero-title text-[44px] sm:text-[56px] md:text-[60px] lg:text-[72px] leading-[0.98] mb-4 md:mb-5 text-left"
+            />
 
-        {/* Statistics Bar */}
-        <div className="stats-reveal pointer-events-auto flex gap-8 md:gap-12 mb-6 md:mb-9 text-left select-text">
-          <div className="flex flex-col">
-            <span className="text-[18px] md:text-[24px] font-semibold text-[var(--text-primary)] tracking-tight">12+</span>
-            <span className="text-[8px] md:text-[9px] uppercase tracking-[0.25em] text-[var(--text-secondary)] font-bold mt-1">Countries Reached</span>
+            {/* Description Subtext */}
+            <p className="hero-reveal-soft text-white/65 text-[15px] md:text-[16px] leading-[1.6] max-w-[520px] mb-6 md:mb-8 text-left select-text pointer-events-auto">
+              Creative, data-driven campaigns for FMCG, healthcare, beauty, and more. Blending digital and offline strategies to drive impact across Jordan, the GCC, and beyond.
+            </p>
+
+            {/* CTAs */}
+            <div className="hero-reveal pointer-events-auto flex flex-wrap items-center gap-3">
+              <CtaButton href="#contact" text="Book a call" />
+              <CtaButton href="/work" text="See our work" variant="secondary" />
+            </div>
           </div>
-          <div className="w-[1px] h-8 md:h-10 bg-[var(--border-color)] self-center" />
-          <div className="flex flex-col">
-            <span className="text-[18px] md:text-[24px] font-semibold text-[var(--text-primary)] tracking-tight">200+</span>
-            <span className="text-[8px] md:text-[9px] uppercase tracking-[0.25em] text-[var(--text-secondary)] font-bold mt-1">Projects Completed</span>
-          </div>
-        </div>
 
-        {/* Book Your Appointment CTA */}
-        <div className="cta-reveal pointer-events-auto w-full flex justify-start">
-          <CtaButton href="#contact" text="Book Your Appointment" />
+          {/* Statistics */}
+          <div className="hero-reveal pointer-events-auto grid grid-cols-2 gap-3 md:min-w-[340px] select-text">
+            {[
+              { value: '12', suffix: '+', label: 'Countries reached' },
+              { value: '200', suffix: '+', label: 'Projects completed' },
+            ].map((stat) => (
+              <div key={stat.label} className="surface-card px-5 py-4 backdrop-blur-md">
+                <div className="text-[30px] md:text-[38px] font-semibold tracking-[-0.04em] leading-none text-white">
+                  {stat.value}
+                  <span className="text-[var(--accent-color)]">{stat.suffix}</span>
+                </div>
+                <div className="mt-2 text-[12px] md:text-[13px] text-white/50">{stat.label}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

@@ -24,41 +24,33 @@ const EditorialClients: React.FC = () => {
   const repeatedLogos = [...clientLogos, ...clientLogos, ...clientLogos, ...clientLogos];
 
   return (
-    <section id="clients" className="relative w-full bg-[var(--bg-primary)] border-t border-[var(--border-color)] py-12 md:py-16 overflow-hidden transition-colors duration-700">
-      <div className="container-custom flex flex-col lg:flex-row items-start lg:items-center gap-8 lg:gap-12 relative">
-        
-        {/* Left Column: Heading Text */}
-        <div className="w-full lg:w-[25%] flex-shrink-0 relative z-10">
-          <p className="text-[var(--text-secondary)] text-[14px] md:text-[15px] font-medium leading-relaxed tracking-tight select-text">
-            Trusted by Leading Brands
-          </p>
+    <section id="clients" className="relative w-full bg-[var(--bg-primary)] py-14 md:py-20 overflow-hidden transition-colors duration-700">
+      <p className="container-custom text-center text-[13px] md:text-[14px] text-white/50 mb-8 md:mb-10 select-text">
+        Trusted by leading brands across Jordan, the GCC &amp; MENA
+      </p>
+
+      {/* Full-width infinite marquee */}
+      <div className="relative w-full overflow-hidden select-none">
+        <div className="absolute top-0 left-0 bottom-0 w-16 md:w-48 bg-gradient-to-r from-[var(--bg-primary)] to-transparent z-[2] pointer-events-none" />
+        <div className="absolute top-0 right-0 bottom-0 w-16 md:w-48 bg-gradient-to-l from-[var(--bg-primary)] to-transparent z-[2] pointer-events-none" />
+
+        <div className="animate-marquee flex items-center gap-3 md:gap-4">
+          {repeatedLogos.map((logo, index) => (
+            <div
+              key={index}
+              aria-hidden={index >= clientLogos.length ? true : undefined}
+              className="v-card no-reveal group flex-shrink-0 flex items-center justify-center h-24 w-44 md:h-28 md:w-60 px-5"
+            >
+              <img
+                src={logo.src}
+                alt={index >= clientLogos.length ? '' : logo.alt}
+                className="h-14 md:h-[72px] w-auto max-w-full object-contain opacity-90 transition-all duration-500 group-hover:opacity-100 group-hover:scale-[1.06]"
+                style={logo.isDark ? { filter: 'var(--logo-filter)' } : undefined}
+                loading="lazy"
+              />
+            </div>
+          ))}
         </div>
-
-        {/* Right Column: Infinite Marquee */}
-        <div className="w-full flex-1 overflow-hidden relative select-none z-[2]">
-          {/* Left and right vignette overlays for premium fade effect */}
-          <div className="absolute top-0 left-0 bottom-0 w-8 md:w-16 bg-gradient-to-r from-[var(--bg-primary)] to-transparent z-[2] pointer-events-none" />
-          <div className="absolute top-0 right-0 bottom-0 w-8 md:w-16 bg-gradient-to-l from-[var(--bg-primary)] to-transparent z-[2] pointer-events-none" />
-
-          {/* Marquee Inner Track */}
-          <div className="animate-marquee flex items-center gap-6 md:gap-8">
-            {repeatedLogos.map((logo, index) => (
-              <div 
-                key={index} 
-                className="flex-shrink-0 group flex items-center justify-center cursor-pointer px-6 py-4 h-20 w-44 transition-all duration-300 opacity-80 hover:opacity-100"
-              >
-                <img
-                  src={logo.src}
-                  alt={logo.alt}
-                  className="max-h-12 max-w-full object-contain transition-transform duration-300 group-hover:scale-[1.05]"
-                  style={logo.isDark ? { filter: 'var(--logo-filter)' } : undefined}
-                  loading="lazy"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-
       </div>
 
       {/* Embedded Styles for Infinite Marquee Scrolling */}
@@ -70,7 +62,7 @@ const EditorialClients: React.FC = () => {
         .animate-marquee {
           display: flex;
           width: max-content;
-          animation: marquee-scroll 30s linear infinite;
+          animation: marquee-scroll 50s linear infinite;
         }
         .animate-marquee:hover {
           animation-play-state: paused;

@@ -1,11 +1,48 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'framer-motion';
 import AnimatedTitle from '../ui/AnimatedTitle';
 
+gsap.registerPlugin(ScrollTrigger);
+
 
 const EditorialWorkflow: React.FC = () => {
+  const pinRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
+  const stepLabelRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const pin = pinRef.current;
+    const track = trackRef.current;
+    if (!pin || !track || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const mm = gsap.matchMedia();
+    mm.add('(min-width: 768px)', () => {
+      // Slide until the last card lines up with the right edge of the container.
+      const distance = () => Math.max(0, track.scrollWidth - track.clientWidth);
+      gsap.to(track, {
+        x: () => -distance(),
+        ease: 'none',
+        scrollTrigger: {
+          trigger: pin,
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: 0.6,
+          invalidateOnRefresh: true,
+          onUpdate: (self) => {
+            if (progressRef.current) progressRef.current.style.transform = `scaleX(${self.progress})`;
+            if (stepLabelRef.current) stepLabelRef.current.textContent = `0${Math.min(3, Math.floor(self.progress * 3) + 1)}`;
+          },
+        },
+      });
+    });
+    return () => mm.revert();
+  }, []);
+
   return (
-    <section id="process" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] py-24 md:py-32 border-t border-[var(--border-color)] overflow-hidden transition-colors duration-700">
+    <section id="process" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] pt-24 md:pt-32 pb-12 md:pb-0 overflow-clip transition-colors duration-700">
       
       {/* Background Vertical Grid Lines */}
       <div className="absolute inset-0 pointer-events-none opacity-20">
@@ -15,15 +52,15 @@ const EditorialWorkflow: React.FC = () => {
         </div>
       </div>
 
-      <div className="container-custom relative z-10 flex flex-col gap-24 md:gap-32">
+      <div className="container-custom relative z-10 flex flex-col gap-3 md:gap-4">
         
         {/* Section Header Block */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-24 items-end relative pb-4">
+        <div className="relative pb-4 mb-10 md:mb-14 max-w-[900px]">
 
           <div className="relative z-10">
-            <p className="text-[var(--text-secondary)] uppercase tracking-[0.3em] text-[10px] font-bold mb-6">How We Work</p>
+            <p className="eyebrow mb-6">How We Work</p>
             
-            <AnimatedTitle lines={['Every Step Is Intentional.', 'Every Outcome Is Measurable.']} className="mb-8" />
+            <AnimatedTitle lines={['Every step is *intentional.*', 'Every outcome is measurable.']} className="mb-8" />
 
             <p className="text-[var(--text-secondary)] text-[15px] md:text-[16px] leading-relaxed max-w-[500px] font-normal">
               <span className="block">In just 3 steps, we turn insights into impact.</span>
@@ -34,16 +71,33 @@ const EditorialWorkflow: React.FC = () => {
 
         </div>
 
+      </div>
+
+      {/* Horizontal track: on tablet/desktop the section holds still while the steps slide sideways */}
+      <div ref={pinRef} className="relative z-10 md:h-[300vh]">
+        <div className="md:sticky md:top-0 md:h-screen md:overflow-hidden md:flex md:flex-col md:justify-center md:pt-[84px] md:pb-6">
+          {/* Progress */}
+          <div className="hidden md:block container-custom mb-6">
+            <div className="flex items-center gap-4 text-[12px] text-white/45">
+              <span className="tabular-nums" ref={stepLabelRef}>01</span>
+              <div className="relative h-px flex-1 bg-white/10 overflow-hidden">
+                <div ref={progressRef} className="absolute inset-y-0 left-0 w-full origin-left scale-x-0 bg-[var(--accent-color)]" />
+              </div>
+              <span className="tabular-nums">03</span>
+            </div>
+          </div>
+          <div ref={trackRef} className="container-custom flex flex-col md:flex-row gap-3 md:gap-5 will-change-transform">
+
         {/* Step 01: Research & Discovery */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-16 lg:gap-24 items-center">
+        <div className="h-step v-card no-reveal grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-14 items-center p-6 sm:p-10 lg:p-12 md:w-[min(1120px,84vw)] md:flex-shrink-0 bg-[#0b0b0d]">
           {/* Left: Content */}
           <div className="relative order-2 lg:order-1">
             
-            <div className="relative inline-block">
-              <span className="absolute -top-[25px] sm:-top-[35px] md:-top-[42px] -left-2 sm:-left-3 md:-left-4 text-[42px] sm:text-[56px] md:text-[70px] font-serif font-light text-[var(--text-primary)]/[0.08] pointer-events-none select-none z-0 leading-none">
-                (01)
+            <div className="relative flex flex-col items-start">
+              <span className="eyebrow mb-5">
+                Step 01
               </span>
-              <h3 className="relative z-10 mb-6 font-display font-medium text-3xl md:text-4xl text-[var(--text-primary)]">
+              <h3 className="relative z-10 mb-4 font-display font-medium tracking-[-0.03em] text-3xl md:text-[40px] leading-[1.05] text-[var(--text-primary)]">
                 Research & Discovery
               </h3>
             </div>
@@ -83,7 +137,7 @@ const EditorialWorkflow: React.FC = () => {
                 {/* Header Item */}
                 <div className="p-4 sm:p-8 border-b border-white/10 flex justify-between items-center bg-white/[0.03]">
                   <div>
-                    <h3 className="text-[14px] sm:text-[18px] font-semibold text-white mb-1.5 sm:mb-2 tracking-tight">Research & Discovery</h3>
+                    <p className="text-[14px] sm:text-[18px] font-semibold text-white mb-1.5 sm:mb-2 tracking-tight">Research & Discovery</p>
                     <div className="flex items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-[12px] text-white/40 font-medium">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                       STAGE 01 — UNDERSTANDING
@@ -108,7 +162,7 @@ const EditorialWorkflow: React.FC = () => {
                   ].map((task, i) => (
                     <div key={i} className="p-4 px-5 sm:p-7 sm:px-8 border-b border-white/5 flex justify-between items-center hover:bg-white/[0.01] transition-colors group">
                       <div>
-                        <h3 className="text-[13px] sm:text-[14px] font-medium text-white/90 mb-1 tracking-tight group-hover:text-white transition-colors">{task.label}</h3>
+                        <p className="text-[13px] sm:text-[14px] font-medium text-white/90 mb-1 tracking-tight group-hover:text-white transition-colors">{task.label}</p>
                         <p className="text-[10px] sm:text-[12px] text-white/40 font-medium">{task.sub}</p>
                       </div>
                       <span className="text-[12px] sm:text-[14px] text-white/70 font-semibold tracking-tighter">{task.stat}</span>
@@ -122,7 +176,7 @@ const EditorialWorkflow: React.FC = () => {
 
 
         {/* Step 02: Strategy & Execution */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-16 lg:gap-24 items-center">
+        <div className="h-step v-card no-reveal grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-14 items-center p-6 sm:p-10 lg:p-12 md:w-[min(1120px,84vw)] md:flex-shrink-0 bg-[#0b0b0d]">
           {/* Left: Mockup */}
           <div className="relative order-1 lg:order-1 flex justify-start">
             <motion.div 
@@ -169,7 +223,7 @@ const EditorialWorkflow: React.FC = () => {
                   {/* Chat Message Block */}
                   <div className="p-4 pb-6 sm:p-8 sm:pb-10">
                     <div className="flex items-center gap-2.5 mb-2.5">
-                      <h4 className="text-[13px] sm:text-[14px] font-bold text-white/90">Yasmine</h4>
+                      <p className="text-[13px] sm:text-[14px] font-bold text-white/90">Yasmine</p>
                       <span className="text-[10px] sm:text-[11px] text-white/30 font-medium">10 MAY 2026, 13:00PM</span>
                     </div>
                     <div className="text-[12px] sm:text-[14px] leading-relaxed text-white/40 font-medium p-4 sm:p-6 bg-white/[0.03] border border-white/5 relative">
@@ -185,11 +239,11 @@ const EditorialWorkflow: React.FC = () => {
           {/* Right: Content */}
           <div className="relative order-2 lg:order-2 pl-0 lg:pl-16">
             
-            <div className="relative inline-block">
-              <span className="absolute -top-[25px] sm:-top-[35px] md:-top-[42px] -left-2 sm:-left-3 md:-left-4 text-[42px] sm:text-[56px] md:text-[70px] font-serif font-light text-[var(--text-primary)]/[0.08] pointer-events-none select-none z-0 leading-none">
-                (02)
+            <div className="relative flex flex-col items-start">
+              <span className="eyebrow mb-5">
+                Step 02
               </span>
-              <h3 className="relative z-10 mb-6 font-display font-medium text-3xl md:text-4xl text-[var(--text-primary)]">
+              <h3 className="relative z-10 mb-4 font-display font-medium tracking-[-0.03em] text-3xl md:text-[40px] leading-[1.05] text-[var(--text-primary)]">
                 Strategy & Execution
               </h3>
             </div>
@@ -201,15 +255,15 @@ const EditorialWorkflow: React.FC = () => {
         </div>
 
         {/* Step 03: Measure & Optimize */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-16 lg:gap-24 items-center">
+        <div className="h-step v-card no-reveal grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-14 items-center p-6 sm:p-10 lg:p-12 md:w-[min(1120px,84vw)] md:flex-shrink-0 bg-[#0b0b0d]">
           {/* Left: Content */}
           <div className="relative order-2 lg:order-1">
             
-            <div className="relative inline-block">
-              <span className="absolute -top-[25px] sm:-top-[35px] md:-top-[42px] -left-2 sm:-left-3 md:-left-4 text-[42px] sm:text-[56px] md:text-[70px] font-serif font-light text-[var(--text-primary)]/[0.08] pointer-events-none select-none z-0 leading-none">
-                (03)
+            <div className="relative flex flex-col items-start">
+              <span className="eyebrow mb-5">
+                Step 03
               </span>
-              <h3 className="relative z-10 mb-6 font-display font-medium text-3xl md:text-4xl text-[var(--text-primary)]">
+              <h3 className="relative z-10 mb-4 font-display font-medium tracking-[-0.03em] text-3xl md:text-[40px] leading-[1.05] text-[var(--text-primary)]">
                 Measure & Optimize
               </h3>
             </div>
@@ -249,7 +303,7 @@ const EditorialWorkflow: React.FC = () => {
                 {/* Header Item */}
                 <div className="p-4 sm:p-8 border-b border-white/10 flex justify-between items-center bg-white/[0.03]">
                   <div>
-                    <h3 className="text-[14px] sm:text-[18px] font-semibold text-white mb-1.5 sm:mb-2 tracking-tight">Performance Analytics</h3>
+                    <p className="text-[14px] sm:text-[18px] font-semibold text-white mb-1.5 sm:mb-2 tracking-tight">Performance Analytics</p>
                     <div className="flex items-center gap-1.5 sm:gap-2.5 text-[10px] sm:text-[12px] text-[#4ade80] font-bold">
                       <span className="w-2 h-2 rounded-full bg-[#4ade80] animate-pulse mr-1"></span>
                       CAMPAIGN ROI STATUS: OPTIMIZED
@@ -298,6 +352,8 @@ const EditorialWorkflow: React.FC = () => {
           </div>
         </div>
 
+          </div>
+        </div>
       </div>
     </section>
   );

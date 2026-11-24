@@ -1,62 +1,79 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import EditorialMenu from './EditorialMenu';
 
+const navLinks = [
+  { name: 'Why us', href: '#why-us' },
+  { name: 'Services', href: '#about' },
+  { name: 'Work', href: '/work' },
+  { name: 'Pricing', href: '#pricing' },
+  { name: 'FAQ', href: '#faq' },
+];
+
 const EditorialNavbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const closeMenu = useCallback(() => setIsMenuOpen(false), []);
+
+  // Slightly more solid background once the page has scrolled.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   return (
     <>
-      <nav className="absolute top-0 left-0 right-0 z-[1000] py-12 flex justify-center mix-blend-difference pointer-events-none w-full">
-        <div className="container-custom flex justify-between items-center">
-          <motion.a 
-            href="/"
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="pointer-events-auto flex items-center"
-          >
-            <img 
-              src="logo-masmena.png" 
-              alt="MAS MENA" 
-              className="h-7 w-auto object-contain" 
-            />
-          </motion.a>
-          
-          <div className="flex gap-16 items-center pointer-events-auto">
-            {/* Status indicator seen in screenshot */}
-            <motion.div 
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="hidden md:flex items-center gap-6"
-            >
-              <div className="w-6 h-6 border border-white/20 rounded-full flex items-center justify-center opacity-50">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-              </div>
-              <a
-                href="/work"
-                className="text-[11px] uppercase tracking-[0.4em] font-bold hover:opacity-50 transition-opacity"
-              >
-                View Works
-              </a>
-            </motion.div>
+      <motion.nav
+        aria-label="Main"
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="fixed top-3 md:top-5 left-0 right-0 z-[1000] px-3 md:px-6 pointer-events-none"
+      >
+        <div
+          className={`pointer-events-auto mx-auto flex h-14 w-full max-w-[1100px] items-center justify-between rounded-full border pl-5 pr-2 backdrop-blur-xl transition-colors duration-500 ${
+            scrolled ? 'border-white/12 bg-black/70' : 'border-white/8 bg-black/35'
+          }`}
+        >
+          <a href="/" className="flex items-center" aria-label="MAS MENA home">
+            <img src="logo-masmena.png" alt="MAS MENA" className="h-6 w-auto object-contain" />
+          </a>
 
-            <motion.button
+          <ul className="hidden lg:flex items-center gap-1">
+            {navLinks.map((link) => (
+              <li key={link.name}>
+                <a
+                  href={link.href}
+                  className="rounded-full px-4 py-2 text-[14px] font-medium text-white/65 transition-colors duration-200 hover:bg-white/[0.06] hover:text-white"
+                >
+                  {link.name}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <div className="flex items-center gap-1">
+            <a
+              href="#contact"
+              className="hidden sm:inline-flex items-center rounded-full bg-white px-5 py-2.5 text-[14px] font-medium text-black transition-colors duration-200 hover:bg-white/90"
+            >
+              Let&apos;s talk
+            </a>
+            <button
               onClick={() => setIsMenuOpen(true)}
               aria-label="Open menu"
               aria-expanded={isMenuOpen}
               aria-haspopup="dialog"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="magnetic flex flex-col justify-center items-end gap-[6px] group h-10 w-10 pl-4"
+              className="lg:hidden flex h-10 w-10 flex-col items-center justify-center gap-[6px] rounded-full transition-colors hover:bg-white/[0.06]"
             >
-              <div className="w-8 h-[1px] bg-white group-hover:w-4 transition-all duration-300" />
-              <div className="w-4 h-[1px] bg-white group-hover:w-8 transition-all duration-300" />
-            </motion.button>
+              <span className="block h-[1.5px] w-5 bg-white" />
+              <span className="block h-[1.5px] w-5 bg-white" />
+            </button>
           </div>
         </div>
-      </nav>
+      </motion.nav>
 
       <EditorialMenu isOpen={isMenuOpen} onClose={closeMenu} />
     </>

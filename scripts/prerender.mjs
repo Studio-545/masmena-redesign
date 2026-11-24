@@ -82,6 +82,8 @@ function buildPage(template, route, rootHtml) {
     '</head>',
     `    <link rel="canonical" href="${canonical}" />${BOOT_SNIPPET}\n  </head>`
   );
+  // Keep the share-preview URL in step with the page's own address.
+  html = html.replace(/(<meta property="og:url" content=")[^"]*(")/, `$1${canonical}$2`);
 
   if (route.title) {
     html = html.replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeText(route.title)}</title>`);

@@ -1,34 +1,31 @@
 import React from 'react';
+import { ArrowUpRight } from 'lucide-react';
 
 interface CtaButtonProps {
   href: string;
   text: string;
   className?: string;
+  /** primary = solid white pill, secondary = outlined pill */
+  variant?: 'primary' | 'secondary';
 }
 
-const CtaButton: React.FC<CtaButtonProps> = ({ href, text, className = '' }) => {
+const CtaButton: React.FC<CtaButtonProps> = ({ href, text, className = '', variant = 'primary' }) => {
+  const styles =
+    variant === 'primary'
+      ? 'bg-white text-black hover:bg-white/90 shadow-[0_0_0_1px_rgba(255,255,255,0.1),0_8px_30px_-6px_rgba(166,115,255,0.55)] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.2),0_10px_40px_-6px_rgba(166,115,255,0.8)]'
+      : 'border border-white/15 bg-white/[0.03] text-white hover:border-white/35 hover:bg-white/[0.07]';
+
   return (
-    <a 
-      href={href} 
-      className={`group relative inline-flex items-center justify-between max-w-full gap-3 px-3.5 py-3 min-[420px]:gap-6 min-[420px]:px-6 md:px-8 md:py-4 border border-[var(--border-color)] rounded-none hover:border-[var(--text-primary)] bg-transparent hover:bg-[var(--text-primary)]/[0.03] transition-all duration-300 w-fit cursor-pointer ${className}`}
+    <a
+      href={href}
+      className={`magnetic group relative inline-flex max-w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-[14px] font-medium tracking-[-0.01em] whitespace-nowrap transition-[color,background-color,border-color,box-shadow] duration-300 ${styles} ${className}`}
     >
-      <span className="text-[10px] tracking-[0.15em] min-[420px]:text-[11px] min-[420px]:tracking-[0.25em] md:text-[11.5px] font-bold uppercase text-[var(--text-primary)]/80 group-hover:text-[var(--text-primary)] transition-colors duration-300 whitespace-nowrap">
-        {text}
-      </span>
-      
-      {/* Custom Circular Dotted Spinning Indicator */}
-      <div className="relative w-5 h-5 flex items-center justify-center flex-shrink-0">
-        <div className="absolute inset-0 flex items-center justify-center cta-spin">
-          {[0, 45, 90, 135, 180, 225, 270, 315].map((angle, i) => (
-            <div 
-              key={i} 
-              className="absolute w-[2px] h-[2px] bg-[var(--text-primary)] rounded-full opacity-35 transition-all duration-300 group-hover:opacity-85 group-hover:scale-125"
-              style={{ transform: `rotate(${angle}deg) translateY(-8px)` }}
-            />
-          ))}
-        </div>
-        <div className="w-[1.5px] h-[1.5px] bg-[var(--text-primary)] rounded-full transition-all duration-300 group-hover:scale-[1.75]" />
-      </div>
+      <span>{text}</span>
+      <ArrowUpRight
+        size={16}
+        strokeWidth={2}
+        className="transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+      />
     </a>
   );
 };

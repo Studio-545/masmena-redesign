@@ -1,257 +1,108 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
+import { ArrowUpRight, Clock, Mail, MapPin, Phone } from 'lucide-react';
 import BookingForm from './BookingForm';
 import AnimatedTitle from '../ui/AnimatedTitle';
+import WhatsAppIcon from '../ui/WhatsAppIcon';
 import { BUSINESS } from '../../data/business';
 
-const CHARS = '0123456789#@%&';
-const COLORS = [
-  '#ff2a5f', '#ff00a0',
-  '#d000ff', '#3b82f6',
-  '#00f0ff', '#00ffcc',
-  '#10ff50', '#ffe600',
-  '#ff7700', '#ffffff',
+const channels = [
+  {
+    label: 'WhatsApp',
+    value: 'Chat with our team',
+    href: BUSINESS.whatsappHref,
+    external: true,
+    icon: <WhatsAppIcon className="h-5 w-5" />,
+    primary: true,
+  },
+  {
+    label: 'Call',
+    value: BUSINESS.phoneDisplay,
+    href: BUSINESS.phoneHref,
+    icon: <Phone size={19} strokeWidth={1.75} />,
+    ltr: true,
+  },
+  {
+    label: 'Email',
+    value: BUSINESS.email,
+    href: `mailto:${BUSINESS.email}`,
+    icon: <Mail size={19} strokeWidth={1.75} />,
+  },
 ];
 
-interface Char {
-  x: number;
-  y: number;
-  char: string;
-  color: string;
-}
-
-const HOVER_RADIUS = 150;
-const COL_GAP = 12; // Increased slightly for performance
-const ROW_GAP = 14; 
-const FONT_SIZE = 11;
-
 const EditorialContact: React.FC = () => {
-  const containerRef = useRef<HTMLElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const maskCanvasRef = useRef<HTMLCanvasElement | null>(null);
-  const charsRef = useRef<Char[]>([]);
-  const mouseRef = useRef({ x: -9999, y: -9999 });
-  const rafRef = useRef<number>(0);
-  const isVisible = useRef(false);
-
-  const buildChars = (W: number, H: number) => {
-    const list: Char[] = [];
-    const cols = Math.ceil(W / COL_GAP) + 1;
-    const rows = Math.ceil(H / ROW_GAP) + 1;
-    for (let r = 0; r < rows; r++) {
-      for (let c = 0; c < cols; c++) {
-        list.push({
-          x: c * COL_GAP,
-          y: r * ROW_GAP,
-          char: CHARS[Math.floor(Math.random() * CHARS.length)],
-          color: COLORS[Math.floor(Math.random() * COLORS.length)],
-        });
-      }
-    }
-    charsRef.current = list;
-  };
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d', { alpha: false });
-    if (!ctx) return;
-
-    // Create offscreen mask canvas for performance
-    const maskCanvas = document.createElement('canvas');
-    maskCanvasRef.current = maskCanvas;
-    const maskCtx = maskCanvas.getContext('2d');
-
-    const resize = () => {
-      const W = canvas.parentElement!.offsetWidth;
-      const H = canvas.parentElement!.offsetHeight;
-      canvas.width = W;
-      canvas.height = H;
-      maskCanvas.width = W;
-      maskCanvas.height = H;
-      buildChars(W, H);
-    };
-
-    let frameCount = 0;
-    let cachedMaskData: Uint8ClampedArray | undefined;
-
-    const render = (time: number) => {
-      if (!isVisible.current) {
-        rafRef.current = requestAnimationFrame(render);
-        return;
-      }
-
-      const { width: W, height: H } = canvas;
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, W, H);
-      ctx.font = `${FONT_SIZE}px monospace`;
-
-      const mx = mouseRef.current.x;
-      const my = mouseRef.current.y;
-
-      const scale = Math.min(W, H) * 0.95;
-      const cx = W / 2;
-      const cy = H / 2;
-      
-      const offX = Math.sin(time * 0.0006) * 40;
-      const offY = Math.cos(time * 0.0008) * 30;
-
-      // 1. Draw logo to mask canvas — only redraw every 4 frames (animation is slow)
-      if (maskCtx && frameCount % 4 === 0) {
-        maskCtx.clearRect(0, 0, W, H);
-        
-        // Helper to draw a single logo shape
-        const drawLogo = (x: number, y: number, s: number) => {
-          const logoPath = new Path2D();
-          logoPath.moveTo(x - s * 0.15, y - s * 0.35);
-          logoPath.bezierCurveTo(x + s * 0.45, y - s * 0.45, x + s * 0.45, y + s * 0.1, x, y);
-          logoPath.bezierCurveTo(x - s * 0.45, y + s * 0.1, x - s * 0.45, y + s * 0.45, x + s * 0.1, y + s * 0.35);
-          logoPath.bezierCurveTo(x + s * 0.45, y + s * 0.25, x + s * 0.25, y - s * 0.1, x - s * 0.1, y - s * 0.2);
-          
-          maskCtx.lineWidth = s * 0.28;
-          maskCtx.strokeStyle = 'white';
-          maskCtx.stroke(logoPath);
-        };
-
-        // Draw center logo
-        const sCenter = scale * 0.75; // slightly smaller so it frames the form well
-        drawLogo(cx + offX, cy + offY, sCenter);
-
-        // Draw left and right logos on screens wider than mobile
-        if (W >= 768) {
-          const sSide = sCenter * 0.85; // side shapes are slightly smaller
-          const offXLeft = Math.sin(time * 0.0005 + 1.5) * 30;
-          const offYLeft = Math.cos(time * 0.0007 + 0.5) * 25;
-          const offXRight = Math.sin(time * 0.0007 + 3.0) * 35;
-          const offYRight = Math.cos(time * 0.0006 + 2.0) * 30;
-
-          // Draw left logo centered at 36% screen width offset
-          drawLogo(cx - W * 0.36 + offXLeft, cy + offYLeft, sSide);
-          // Draw right logo centered at 36% screen width offset
-          drawLogo(cx + W * 0.36 + offXRight, cy + offYRight, sSide);
-        }
-
-        // Cache pixel data — only refresh every 4 frames to avoid 75% of GPU→CPU readbacks
-        cachedMaskData = maskCtx.getImageData(0, 0, W, H).data;
-      }
-
-      frameCount++;
-
-      const maskData = cachedMaskData;
-
-      for (const ch of charsRef.current) {
-        if (Math.random() < 0.003) {
-          ch.char = CHARS[Math.floor(Math.random() * CHARS.length)];
-        }
-
-        const dx = ch.x - mx;
-        const dy = ch.y - my;
-        const distSq = dx * dx + dy * dy;
-        
-        // Fast distance check before square root
-        let hoverFactor = 0;
-        if (distSq < HOVER_RADIUS * HOVER_RADIUS) {
-          hoverFactor = 1 - Math.sqrt(distSq) / HOVER_RADIUS;
-        }
-
-        // Fast pixel test from mask data
-        const pixelIdx = (Math.floor(ch.y) * W + Math.floor(ch.x)) * 4;
-        const isInside = maskData && maskData[pixelIdx] > 0;
-
-        let opacity = 0.04;
-        if (isInside) {
-          opacity = 0.95; // Bright and clear neon colors all the time without needing hover!
-          ctx.fillStyle = ch.color;
-        } else {
-          opacity = 0.02 + hoverFactor * 0.1;
-          ctx.fillStyle = '#ffffff';
-        }
-
-        ctx.globalAlpha = opacity;
-        ctx.fillText(ch.char, ch.x, ch.y);
-      }
-
-      ctx.globalAlpha = 1;
-      rafRef.current = requestAnimationFrame(render);
-    };
-
-
-    const onMouseMove = (e: MouseEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseRef.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-    };
-    const onMouseLeave = () => {
-      mouseRef.current = { x: -9999, y: -9999 };
-    };
-
-    // Intersection Observer to run only when in viewport
-    const observer = new IntersectionObserver((entries) => {
-      isVisible.current = entries[0].isIntersecting;
-    }, { threshold: 0.1 });
-    if (containerRef.current) observer.observe(containerRef.current);
-
-    resize();
-    rafRef.current = requestAnimationFrame(render);
-    canvas.addEventListener('mousemove', onMouseMove, { passive: true });
-    canvas.addEventListener('mouseleave', onMouseLeave);
-
-    const resizeObserver = new ResizeObserver(resize);
-    resizeObserver.observe(canvas.parentElement!);
-
-    return () => {
-      cancelAnimationFrame(rafRef.current);
-      observer.disconnect();
-      resizeObserver.disconnect();
-      canvas.removeEventListener('mousemove', onMouseMove);
-      canvas.removeEventListener('mouseleave', onMouseLeave);
-    };
-  }, []);
-
   return (
-    <section id="contact" ref={containerRef} className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding overflow-hidden min-h-screen flex flex-col border-t border-[var(--border-color)] transition-colors duration-700">
-      <canvas
-        ref={canvasRef}
-        className="absolute inset-0 w-full h-full z-0"
-        style={{ display: 'block', pointerEvents: 'auto', cursor: 'default' }}
-      />
-      <div
-        className="absolute inset-0 z-[1] pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse 75% 70% at 50% 50%, rgba(0,0,0,0.5) 0%, transparent 100%)',
-        }}
-      />
-      <div className="relative z-10 text-center mb-12 px-4" style={{ pointerEvents: 'none' }}>
-        <div className="inline-block px-8 py-6 rounded-sm" style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}>
-          <AnimatedTitle lines={['Ready When You Are', "... Let's Talk!"]} className="mb-4 text-center" />
-          <p className="text-white/80 text-[14px] leading-relaxed max-w-[500px] mx-auto mt-3">
+    <section
+      id="contact"
+      className="relative w-full overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding transition-colors duration-700"
+    >
+      <div aria-hidden className="brand-glow pointer-events-none absolute inset-x-0 top-0 h-[70%] opacity-70" />
+
+      <div className="container-custom relative z-10">
+        <div className="section-head-center mb-12 md:mb-16">
+          <p className="eyebrow mb-6">Contact</p>
+          <AnimatedTitle lines={['Ready when you are.', "Let's *talk.*"]} className="mb-6 text-center" />
+          <p className="text-white/65 text-[15px] leading-relaxed max-w-[540px] mx-auto">
             Whether you operate in Jordan today or are preparing to scale across MENA, let's explore how we can create a plan that fits you perfectly. We will ask the right questions, discuss possibilities, and make an action plan.
           </p>
-          <address
-            className="not-italic mt-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3 text-left text-[13px] text-white/80 max-w-[520px] mx-auto"
-            style={{ pointerEvents: 'auto' }}
-          >
-            <div>
-              <span className="block text-[10px] uppercase tracking-[0.25em] text-white/40">Office</span>
-              <a href={BUSINESS.mapsUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                {BUSINESS.address}
-              </a>
-            </div>
-            <div>
-              <span className="block text-[10px] uppercase tracking-[0.25em] text-white/40">Hours</span>
-              {BUSINESS.hours}
-            </div>
-            <div>
-              <span className="block text-[10px] uppercase tracking-[0.25em] text-white/40">Phone</span>
-              <a href={BUSINESS.phoneHref} className="hover:text-white transition-colors" dir="ltr">{BUSINESS.phoneDisplay}</a>
-            </div>
-            <div>
-              <span className="block text-[10px] uppercase tracking-[0.25em] text-white/40">Email</span>
-              <a href={`mailto:${BUSINESS.email}`} className="hover:text-white transition-colors">{BUSINESS.email}</a>
-            </div>
-          </address>
         </div>
-      </div>
-      <div className="relative z-10 w-full flex-1 flex justify-center px-4" style={{ pointerEvents: 'auto' }}>
-        <BookingForm />
+
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)] gap-3 md:gap-4 items-start">
+          {/* Direct channels */}
+          <div className="flex flex-col gap-3 md:gap-4 lg:sticky lg:top-28">
+            {channels.map((c) => (
+              <a
+                key={c.label}
+                href={c.href}
+                {...(c.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className={`v-card group flex items-center gap-4 p-5 md:p-6 ${c.primary ? 'border-[rgba(166,115,255,0.4)]' : ''}`}
+              >
+                <span
+                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full ${
+                    c.primary ? 'bg-[var(--accent-color)] text-black' : 'border border-white/10 bg-white/[0.04] text-white/85'
+                  }`}
+                >
+                  {c.icon}
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[12px] uppercase tracking-[0.16em] text-white/45">{c.label}</span>
+                  <span className="block truncate text-[16px] md:text-[17px] font-medium tracking-[-0.01em]" dir={c.ltr ? 'ltr' : undefined}>
+                    {c.value}
+                  </span>
+                </span>
+                <ArrowUpRight size={18} className="flex-shrink-0 text-white/40 transition-all duration-300 group-hover:text-white group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+              </a>
+            ))}
+
+            <address className="v-card not-italic p-5 md:p-6 text-[14px] text-white/70">
+              <a
+                href={BUSINESS.mapsUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-start gap-3 hover:text-white transition-colors"
+              >
+                <MapPin size={17} strokeWidth={1.75} className="mt-[2px] flex-shrink-0 text-white/45" />
+                <span>
+                  <span className="block text-[12px] uppercase tracking-[0.16em] text-white/45 mb-1">Office</span>
+                  {BUSINESS.address}
+                </span>
+              </a>
+              <div className="my-4 h-px bg-white/[0.08]" />
+              <div className="flex items-start gap-3">
+                <Clock size={17} strokeWidth={1.75} className="mt-[2px] flex-shrink-0 text-white/45" />
+                <span>
+                  <span className="block text-[12px] uppercase tracking-[0.16em] text-white/45 mb-1">Hours</span>
+                  {BUSINESS.hours}
+                </span>
+              </div>
+            </address>
+          </div>
+
+          {/* Booking calendar */}
+          <div>
+            <p className="mb-3 px-1 text-[13px] text-white/50">Or pick a time for a free 30-minute call:</p>
+            <BookingForm />
+          </div>
+        </div>
       </div>
     </section>
   );

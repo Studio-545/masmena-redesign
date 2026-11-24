@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Plus } from 'lucide-react';
 import AnimatedTitle from '../ui/AnimatedTitle';
+import WhatsAppIcon from '../ui/WhatsAppIcon';
+import { BUSINESS } from '../../data/business';
 
 const faqData = [
   {
@@ -49,134 +52,86 @@ const EditorialFAQ: React.FC = () => {
   const [activeIndex, setActiveIndex] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding border-t border-[var(--border-color)] transition-colors duration-700">
+    <section id="faq" className="relative w-full bg-[var(--bg-primary)] text-[var(--text-primary)] section-padding transition-colors duration-700">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: faqJsonLd }} />
-      <div className="container-custom relative z-10 flex flex-col lg:flex-row gap-16 xl:gap-20">
-        
-        {/* ── Left Column: Header & Visuals ── */}
-        <div className="w-full lg:w-[45%] flex flex-col items-start lg:sticky lg:top-32 lg:self-start">
-
-          {/* Heading Structure */}
-          <div className="relative mb-6">
-            <AnimatedTitle lines={['Frequently Asked', 'Questions']} />
-          </div>
-          
-          {/* Indented Text Area */}
-          <div className="mb-8">
-            <p className="text-[var(--text-secondary)] text-[14px] leading-relaxed max-w-[400px]">
-              Find clear answers to the most common questions, all in one place. Everything is explained simply and upfront, so you know exactly what to expect.
-            </p>
-          </div>
-          
-          {/* Premium Editorial Asymmetrical Grid Showcase (4 slider images with different sizes) */}
-          <div className="grid grid-cols-12 gap-2 mb-10 w-full max-w-[300px]">
-            {/* 1. Large Wide Landscape (col-span-8) */}
-            <div className="col-span-8 relative aspect-[16/10] overflow-hidden border border-white/10 shadow-lg rounded-none group">
-              <motion.img 
-                src="images/slider/serene-2.webp" 
-                className="w-full h-full object-cover grayscale-[0.25] group-hover:grayscale-0" 
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                alt="Serene peach juice can, product photography with fresh peaches" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
-            </div>
-
-            {/* 2. Small Square (col-span-4) */}
-            <div className="col-span-4 relative aspect-square overflow-hidden border border-white/10 shadow-lg rounded-none group">
-              <motion.img 
-                src="images/slider/super-design.webp" 
-                className="w-full h-full object-cover grayscale-[0.25] group-hover:grayscale-0" 
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                alt="Super Drink campaign design with product photography and branded merchandise" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
-            </div>
-
-            {/* 3. Tall Portrait (col-span-4) */}
-            <div className="col-span-4 relative aspect-[3/4] overflow-hidden border border-white/10 shadow-lg rounded-none group">
-              <motion.img 
-                src="images/slider/chai-karak.webp" 
-                className="w-full h-full object-cover grayscale-[0.25] group-hover:grayscale-0" 
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                alt="Iced Chai Karak cans, product photography on traditional red fabric" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
-            </div>
-
-            {/* 4. Long Panoramic Landscape (col-span-8) */}
-            <div className="col-span-8 relative aspect-[16/7] overflow-hidden border border-white/10 shadow-lg rounded-none group">
-              <motion.img 
-                src="images/slider/MOG-design.webp" 
-                className="w-full h-full object-cover grayscale-[0.25] group-hover:grayscale-0" 
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                alt="MOG brand identity and fashion campaign visuals" 
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-transparent to-transparent pointer-events-none" />
-            </div>
-          </div>
-
-
+      <div className="container-custom relative z-10">
+        <div className="section-head-center mb-12 md:mb-16">
+          <p className="eyebrow mb-6">FAQ</p>
+          <AnimatedTitle lines={['Frequently asked *questions*']} className="mb-6 text-center" />
+          <p className="text-[var(--text-secondary)] text-[15px] leading-relaxed max-w-[480px] mx-auto">
+            Clear answers to the questions we hear most, so you know exactly what to expect.
+          </p>
         </div>
 
-        {/* ── Right Column: Interactive Accordion ── */}
-        <div className="flex-1 flex flex-col border-t border-white/10 mt-12 lg:mt-0">
+        <div className="mx-auto max-w-[880px] flex flex-col gap-2.5">
           {faqData.map((item, index) => {
             const isOpen = activeIndex === index;
+            const panelId = `faq-panel-${index}`;
             return (
-              <div 
+              <div
                 key={index}
-                className={`relative border-b border-white/10 transition-all duration-500 ${isOpen ? 'bg-gradient-to-b from-white/[0.05] to-transparent' : 'hover:bg-white/[0.01]'}`}
+                className={`v-card ${isOpen ? 'border-white/[0.16] bg-white/[0.035]' : ''}`}
               >
-                <button
-                  onClick={() => setActiveIndex(isOpen ? null : index)}
-                  className="w-full py-8 md:py-12 px-2 sm:px-6 md:px-8 flex justify-between items-center text-left transition-all"
-                >
-                  <span className={`text-[17px] sm:text-[20px] md:text-[24px] font-semibold tracking-tight text-left transition-all duration-300 ${isOpen ? 'text-[var(--text-primary)]' : 'text-[var(--text-secondary)]'}`}>
-                    {item.question}
-                  </span>
-                  
-                  <div className="relative w-6 h-6 flex items-center justify-center opacity-40 flex-shrink-0 ml-4">
-                    <div className="flex flex-col gap-[3px] items-end">
-                      <div className="w-1 h-1 bg-white rounded-full" />
-                      <div className="flex gap-[3px]">
-                        <div className="w-1 h-1 bg-[var(--text-primary)] rounded-full" />
-                        <div className="w-1 h-1 bg-[var(--text-primary)] rounded-full" />
-                      </div>
-                    </div>
-                  </div>
-                </button>
- 
-                <AnimatePresence>
+                <h3>
+                  <button
+                    onClick={() => setActiveIndex(isOpen ? null : index)}
+                    aria-expanded={isOpen}
+                    aria-controls={panelId}
+                    className="w-full flex items-center gap-4 md:gap-6 px-5 py-5 md:px-7 md:py-6 text-left"
+                  >
+                    <span className="text-[12px] md:text-[13px] font-medium tabular-nums text-white/35 w-6 flex-shrink-0">
+                      {String(index + 1).padStart(2, '0')}
+                    </span>
+                    <span className={`flex-1 text-[16px] md:text-[19px] font-medium tracking-[-0.015em] transition-colors duration-300 ${isOpen ? 'text-white' : 'text-white/75'}`}>
+                      {item.question}
+                    </span>
+                    <span
+                      aria-hidden
+                      className={`relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border transition-all duration-300 ${isOpen ? 'rotate-45 border-[var(--accent-color)] bg-[var(--accent-color)] text-black' : 'border-white/15 text-white/70'}`}
+                    >
+                      <Plus size={15} strokeWidth={2} />
+                    </span>
+                  </button>
+                </h3>
+
+                <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
+                      id={panelId}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                      className="overflow-hidden"
                     >
-                      <div className="px-2 sm:px-6 md:px-8 pb-8 md:pb-12">
-                        <p className="text-[var(--text-secondary)] text-[14px] sm:text-[15px] md:text-[17px] text-left leading-[1.8] max-w-[620px]">
-                          {item.answer}
-                        </p>
-                      </div>
+                      <p className="px-5 pb-6 md:px-7 md:pb-7 md:pl-[76px] text-white/60 text-[14px] md:text-[15px] leading-[1.75] max-w-[720px]">
+                        {item.answer}
+                      </p>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </div>
             );
           })}
+
+          {/* Still have questions */}
+          <div className="v-card mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 px-5 py-6 md:px-7">
+            <div>
+              <p className="text-[17px] md:text-[19px] font-medium tracking-[-0.015em]">Still have questions?</p>
+              <p className="mt-1 text-[14px] text-white/55">Message us on WhatsApp. We usually reply within the same working day.</p>
+            </div>
+            <a
+              href={BUSINESS.whatsappHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex flex-shrink-0 items-center gap-2 rounded-full bg-white px-5 py-3 text-[14px] font-medium text-black transition-colors hover:bg-white/90"
+            >
+              <WhatsAppIcon className="h-4 w-4" />
+              Chat on WhatsApp
+            </a>
+          </div>
         </div>
-
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .animate-spin-slow { animation: spin-slow 15s linear infinite; }
-      `}} />
     </section>
   );
 };

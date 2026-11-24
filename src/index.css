@@ -6,9 +6,8 @@
   --color-accent: #00ff00; /* Glow green */
   
   --font-serif: "Cormorant Garamond", serif;
-  --font-sans: "Montserrat", system-ui, sans-serif;
-  --font-cursive: "Great Vibes", cursive;
-  --font-display: "Cormorant Garamond", serif;
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-display: "Geist", system-ui, sans-serif;
 }
 
 @layer base {
@@ -42,23 +41,23 @@
   }
 
   h1 {
-    font-size: 32px;
+    font-size: 40px;
     @media (min-width: 768px) {
-      font-size: 42px;
+      font-size: 64px;
     }
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.045em;
   }
 
   h2 {
-    font-size: 28px;
+    font-size: 34px;
     @media (min-width: 768px) {
-      font-size: 38px;
+      font-size: 52px;
     }
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
   }
 
   /* Immersive Background Grid */
@@ -73,6 +72,59 @@
 }
 
 @layer components {
+  /* Serif italic accent word inside a sans-serif heading, e.g. "Connect. Create. *Thrive.*" */
+  .accent-serif {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    font-size: 1.08em;
+  }
+
+  /* Soft brand-purple glow, placed behind hero/section content */
+  .brand-glow {
+    background:
+      radial-gradient(ellipse 55% 45% at 50% 35%, rgba(166, 115, 255, 0.28), transparent 70%),
+      radial-gradient(ellipse 35% 30% at 20% 70%, rgba(110, 72, 255, 0.16), transparent 70%),
+      radial-gradient(ellipse 30% 25% at 85% 60%, rgba(166, 115, 255, 0.12), transparent 70%);
+    filter: blur(10px);
+  }
+
+  /* Rounded hairline card surface */
+  .surface-card {
+    @apply rounded-[20px] border border-white/10 bg-white/[0.025];
+  }
+
+  /* Small uppercase section label ("Why us", "Our services"…) */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1 text-[11px] font-medium uppercase tracking-[0.18em] text-white/70;
+  }
+
+  /* Visuvate-style card: hairline border, faint top-lit gradient, purple glow on hover */
+  .v-card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012));
+    transition: border-color 0.4s ease, transform 0.4s ease, background 0.4s ease;
+  }
+  .v-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(120% 80% at 50% 0%, rgba(166, 115, 255, 0.16), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .v-card:hover { border-color: rgba(255, 255, 255, 0.16); }
+  .v-card:hover::before { opacity: 1; }
+
+  /* Large section heading block, centered */
+  .section-head-center { @apply mx-auto max-w-[760px] text-center; }
+
   .container-custom {
     @apply w-full max-w-[1440px] mx-auto px-8 md:px-16;
   }
@@ -202,3 +254,77 @@ html.lenis { height: auto; }
 }
 
 
+
+/* Short desktop screens (e.g. 1280x720 laptops): lift the hero carousel so the headline never touches the cards */
+@media (min-width: 768px) and (max-height: 820px) {
+  .hero-card-pos { top: 27%; }
+  .hero-title { font-size: 56px; }
+}
+
+/* Scroll reveal (see useRevealOnScroll). Marquee cards are excluded so loops never blink. */
+.reveal-ready .v-card:not([data-revealed]):not(.no-reveal),
+.reveal-ready [data-reveal]:not([data-revealed]) {
+  opacity: 0;
+  transform: translateY(28px);
+}
+.reveal-ready .v-card[data-revealed],
+.reveal-ready [data-reveal][data-revealed] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) var(--reveal-delay, 0ms),
+    border-color 0.4s ease,
+    background 0.4s ease;
+}
+
+/* Intro image rows */
+@keyframes intro-left { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes intro-right { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+.intro-row-left { animation: intro-left 60s linear infinite; }
+.intro-row-right { animation: intro-right 60s linear infinite; }
+.intro-row-left:hover, .intro-row-right:hover { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .intro-row-left, .intro-row-right { animation: none; }
+}
+
+/* Cursor spotlight on cards: a soft light plus a brighter rim that follow the pointer */
+.v-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background:
+    radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.07), transparent 45%);
+}
+.v-card:hover::after { opacity: 1; }
+
+/* Rotating light around the featured pricing card */
+@property --spin-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+@keyframes spin-angle { to { --spin-angle: 360deg; } }
+.glow-border {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(from var(--spin-angle), transparent 0deg, transparent 220deg, rgba(166, 115, 255, 0.9) 290deg, #fff 320deg, rgba(166, 115, 255, 0.9) 345deg, transparent 360deg);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  animation: spin-angle 4s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .glow-border { animation: none; } }
+
+/* Short desktop screens: shrink the sideways "How we work" cards so they fit under the navbar */
+@media (min-width: 768px) and (max-height: 760px) {
+  .h-step { zoom: 0.8; }
+}

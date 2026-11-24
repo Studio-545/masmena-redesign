@@ -4,6 +4,7 @@ export const BUSINESS = {
   name: 'MAS MENA',
   phoneDisplay: '+962 7 9168 9404',
   phoneHref: 'tel:+962791689404',
+  whatsappHref: 'https://wa.me/962791689404',
   email: 'info@masmena.com',
   address: 'Zahran St, Amman, Jordan',
   plusCode: 'XV6F+85W',
